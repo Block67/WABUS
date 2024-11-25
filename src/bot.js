@@ -1,7 +1,7 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
 const axios = require("axios");
-require('dotenv').config()
+require("dotenv").config();
 
 // Initialisation du client WhatsApp
 const client = new Client({
@@ -72,18 +72,18 @@ client.on("ready", () => {
 client.on("message", async (message) => {
   console.log(`Message reçu: ${message.body}`);
 
-  // Récupérer le nom de l'utilisateur directement via son numéro
+  // Récupération du nom de l'utilisateur directement via son numéro
   const contact = await client.getContactById(message.from);
   const userName = contact.pushname || contact.name || "Utilisateur";
 
   if (message.body.toLowerCase() === "bus") {
-    // Appel API pour récupérer les horaires de bus
+    // Appel d'API pour récupérer les horaires de bus
     try {
       const response = await axios.get("http://localhost:3000/api/schedule");
       const buses = response.data;
 
       if (buses.length > 0) {
-        let reply = `${userName}, voici les bus disponibles :\n\n`;
+        let reply = `${userName}, voici les bus et les horaires disponibles :\n\n`;
         buses.forEach((bus) => {
           reply += `🚍 *${bus.name}*\nDépart: ${bus.departure}\nArrivée: ${bus.arrival}\nDate: ${bus.date}\nHeure: ${bus.time}\nPrix: ${bus.price} FCFA\n\n`;
         });
