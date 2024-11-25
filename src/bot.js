@@ -20,7 +20,11 @@ client.on('ready', () => {
 
 // Événement lors de la réception d’un message
 client.on('message', async (message) => {
-    console.log(`Message received: ${message.body}`);
+    console.log(`Message reçu: ${message.body}`);
+
+    // Récupérer le nom de l'utilisateur directement via son numéro
+    const contact = await client.getContactById(message.from);
+    const userName = contact.pushname || contact.name || 'Utilisateur';
 
     if (message.body.toLowerCase() === 'bus') {
         // Appel API pour récupérer les horaires de bus
@@ -29,7 +33,7 @@ client.on('message', async (message) => {
             const buses = response.data;
 
             if (buses.length > 0) {
-                let reply = '🚌 Bus disponible:\n\n';
+                let reply = `${userName}, voici les bus disponibles :\n\n`;
                 buses.forEach((bus) => {
                     reply += `🚍 *${bus.name}*\nDépart: ${bus.departure}\nArrivé: ${bus.arrival}\nDate: ${bus.date}\nHeure: ${bus.time}\nPrix: ${bus.price} FCFA\n\n`;
                 });
@@ -38,12 +42,12 @@ client.on('message', async (message) => {
                 message.reply('Aucun horaire disponible pour le moment.');
             }
         } catch (error) {
-            console.error('Error fetching Bus:', error);
+            console.error('Erreur lors de la récupération des horaires :', error);
             message.reply('❌ Impossible de récupérer les horaires. Réessayez plus tard.');
         }
     } else {
-        // Réponse générique
-        message.reply('Je n’ai pas compris votre message. Envoyez "bus" pour voir les horaires de bus.');
+        // Réponse générique avec personnalisation
+        message.reply(`Salut ${userName}, je n’ai pas compris ton message. Envoie "Bus" pour voir les horaires des bus.`);
     }
 });
 
